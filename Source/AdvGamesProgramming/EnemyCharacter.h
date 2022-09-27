@@ -11,7 +11,10 @@ UENUM()
 enum class AgentState : uint8
 {
 	PATROL,
-	CHASE
+	CHASE,
+	CHECK,
+	AIM,
+	SEARCH
 };
 
 UCLASS()
@@ -53,13 +56,19 @@ public:
 
 	void AgentPatrol();
 	void AgentChase();
+	void AgentCheck();
+	void AgentAim();
+	void AgentSearch();
 
 	UFUNCTION()
 	void SensePlayer(AActor* ActorSensed, FAIStimulus Stimulus);
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void Fire(FVector FireDirection);
-
+	UPROPERTY(EditAnywhere)
+		bool isItemExist;
+	UPROPERTY(EditAnywhere)
+	bool isItemChecked;
 private:
 
 	void MoveAlongPath();

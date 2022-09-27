@@ -8,6 +8,7 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "HealthComponent.h"
 #include <Runtime/Engine/Classes/Kismet/KismetMathLibrary.h>
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AEnemyCharacter::AEnemyCharacter()
@@ -36,14 +37,15 @@ void AEnemyCharacter::BeginPlay()
 
 	DetectedActor = nullptr;
 	bCanSeeActor = false;
-
+	isItemExist = true;
+	isItemChecked = false;
 }
 
 // Called every frame
 void AEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 	if (CurrentAgentState == AgentState::PATROL)
 	{
 		AgentPatrol();
@@ -59,13 +61,42 @@ void AEnemyCharacter::Tick(float DeltaTime)
 		{
 			CurrentAgentState = AgentState::PATROL;
 		}
+		else if (bCanSeeActor && (GetActorLocation() - DetectedActor->GetActorLocation()).Size() <= 500) {
+			CurrentAgentState = AgentState::AIM;
+		}
+	}
+	else if (CurrentAgentState == AgentState::CHECK)
+	{
+		if (isItemExist) {
+			AgentCheck();
+			//back to patrol
+			UE_LOG(LogTemp, Warning, TEXT("Item Found"));
+			CurrentAgentState = AgentState::PATROL;
+			
+			UE_LOG(LogTemp, Warning, TEXT("Back to Patrol"));
+		}
+		else if (!isItemExist) {
+			CurrentAgentState = AgentState::SEARCH;
+		}
+		
+	}
+	else if (CurrentAgentState == AgentState::AIM)
+	{
+		AgentAim();
+		if ((GetActorLocation() - DetectedActor->GetActorLocation()).Size() >= 700) {
+			CurrentAgentState = AgentState::CHASE;
+		}
+	}
+	else if (CurrentAgentState == AgentState::SEARCH)
+	{
+		AgentSearch();
+		if (bCanSeeActor) {
+			CurrentAgentState = AgentState::CHASE;
+		}
 	}
 
 	
 	if (DetectedActor != nullptr) {
-
-		//UE_LOG(LogTemp, Warning, TEXT("Detected Actor Location: %s"), *DetectedActor->GetActorLocation().ToString());
-
 		//Rebuild Blueprint Lookat Function in C++
 		//look at this actor
 		FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), DetectedActor->GetActorLocation());
@@ -83,17 +114,21 @@ void AEnemyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 void AEnemyCharacter::AgentPatrol()
 {
+	UE_LOG(LogTemp, Warning, TEXT("I'm Patrolling"));
 	if (Path.Num() == 0)
 	{
-		if (Manager)
-		{
-			Path = Manager->GeneratePath(CurrentNode, Manager->AllNodes[FMath::RandRange(0, Manager->AllNodes.Num() - 1)]);
+		CurrentAgentState = AgentState::CHECK;
+		if (isItemChecked) {
+			if (Manager)
+			{
+				Path = Manager->GeneratePath(CurrentNode, Manager->AllNodes[FMath::RandRange(0, Manager->AllNodes.Num() - 1)]);
+			}
 		}
 	}
 }
-
 void AEnemyCharacter::AgentChase()
 {
+	UE_LOG(LogTemp, Warning, TEXT("I'm Chasing"));
 	//move to the detected actor
 	if (DetectedActor != nullptr) {
 		AddMovementInput(DetectedActor->GetActorLocation() - GetActorLocation());
@@ -103,9 +138,31 @@ void AEnemyCharacter::AgentChase()
 		}
 		else {
 			GetCharacterMovement()->MaxWalkSpeed = 300.0f;
-			UE_LOG(LogTemp, Warning, TEXT("Distance between enemy and player: %f"), (GetActorLocation() - DetectedActor->GetActorLocation()).Size());
 		}
 	}
+}
+void AEnemyCharacter::AgentCheck()
+{
+	UE_LOG(LogTemp, Warning, TEXT("I'm Checking"));
+	isItemChecked = true;
+}
+void AEnemyCharacter::AgentAim()
+{
+	UE_LOG(LogTemp, Warning, TEXT("I'm Aiming"));
+	FVector FireDirection = DetectedActor->GetActorLocation() - GetActorLocation();
+	Fire(FireDirection);
+}
+void AEnemyCharacter::AgentSearch()
+{
+	UE_LOG(LogTemp, Warning, TEXT("I'm Searching"));
+	//search for player location
+	FVector SearchLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+	//create a random location around the player
+	SearchLocation.X += FMath::RandRange(-1000.0f, 1000.0f);
+	SearchLocation.Z += FMath::RandRange(-1000.0f, 1000.0f);
+	//move to the random location
+	AddMovementInput(SearchLocation - GetActorLocation());
+	
 }
 
 void AEnemyCharacter::SensePlayer(AActor* ActorSensed, FAIStimulus Stimulus)
