@@ -11,8 +11,7 @@ UENUM()
 enum class AgentState : uint8
 {
 	PATROL,
-	ENGAGE,
-	EVADE
+	CHASE
 };
 
 UCLASS()
@@ -53,8 +52,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void AgentPatrol();
-	void AgentEngage();
-	void AgentEvade();
+	void AgentChase();
 
 	UFUNCTION()
 	void SensePlayer(AActor* ActorSensed, FAIStimulus Stimulus);

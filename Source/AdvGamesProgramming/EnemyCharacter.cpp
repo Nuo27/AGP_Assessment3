@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "HealthComponent.h"
+#include <Runtime/Engine/Classes/Kismet/KismetMathLibrary.h>
 
 // Sets default values
 AEnemyCharacter::AEnemyCharacter()
@@ -46,45 +47,31 @@ void AEnemyCharacter::Tick(float DeltaTime)
 	if (CurrentAgentState == AgentState::PATROL)
 	{
 		AgentPatrol();
-		if (bCanSeeActor && HealthComponent->HealthPercentageRemaining() >= 40.0f)
-		{
-			CurrentAgentState = AgentState::ENGAGE;
-			Path.Empty();
-		} 
-		else if (bCanSeeActor && HealthComponent->HealthPercentageRemaining() < 40.0f)
-		{
-			CurrentAgentState = AgentState::EVADE;
-			Path.Empty();
+		MoveAlongPath();
+		if (bCanSeeActor) {
+			CurrentAgentState = AgentState::CHASE;
 		}
 	}
-	else if (CurrentAgentState == AgentState::ENGAGE)
+	else if (CurrentAgentState == AgentState::CHASE)
 	{
-		AgentEngage();
+		AgentChase();
 		if (!bCanSeeActor)
 		{
 			CurrentAgentState = AgentState::PATROL;
-		}
-		else if (bCanSeeActor && HealthComponent->HealthPercentageRemaining() < 40.0f)
-		{
-			CurrentAgentState = AgentState::EVADE;
-			Path.Empty();
-		}
-	}
-	else if (CurrentAgentState == AgentState::EVADE)
-	{
-		AgentEvade();
-		if (!bCanSeeActor)
-		{
-			CurrentAgentState = AgentState::PATROL;
-		}
-		else if (bCanSeeActor && HealthComponent->HealthPercentageRemaining() >= 40.0f)
-		{
-			CurrentAgentState = AgentState::ENGAGE;
-			Path.Empty();
 		}
 	}
 
-	MoveAlongPath();
+	
+	if (DetectedActor != nullptr) {
+
+		//UE_LOG(LogTemp, Warning, TEXT("Detected Actor Location: %s"), *DetectedActor->GetActorLocation().ToString());
+
+		//Rebuild Blueprint Lookat Function in C++
+		//look at this actor
+		FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), DetectedActor->GetActorLocation());
+		//set the rotator to the actor
+		SetActorRotation(LookAtRotation);
+	}
 }
 
 // Called to bind functionality to input
@@ -105,31 +92,19 @@ void AEnemyCharacter::AgentPatrol()
 	}
 }
 
-void AEnemyCharacter::AgentEngage()
+void AEnemyCharacter::AgentChase()
 {
-	if (bCanSeeActor && DetectedActor)
-	{
-		FVector FireDirection = DetectedActor->GetActorLocation() - GetActorLocation();
-		Fire(FireDirection);
-	}
-	if (Path.Num() == 0 && DetectedActor)
-	{
-		ANavigationNode* NearestNode = Manager->FindNearestNode(DetectedActor->GetActorLocation());
-		Path = Manager->GeneratePath(CurrentNode, NearestNode);
-	}
-}
-
-void AEnemyCharacter::AgentEvade()
-{
-	if (bCanSeeActor && DetectedActor)
-	{
-		FVector FireDirection = DetectedActor->GetActorLocation() - GetActorLocation();
-		Fire(FireDirection);
-	}
-	if (Path.Num() == 0 && DetectedActor)
-	{
-		ANavigationNode* FurthestNode = Manager->FindFurthestNode(DetectedActor->GetActorLocation());
-		Path = Manager->GeneratePath(CurrentNode, FurthestNode);
+	//move to the detected actor
+	if (DetectedActor != nullptr) {
+		AddMovementInput(DetectedActor->GetActorLocation() - GetActorLocation());
+		//slow down when close to the actor
+		if ((GetActorLocation() - DetectedActor->GetActorLocation()).Size() < 100.0f) {
+			GetCharacterMovement()->MaxWalkSpeed = 100.0f;
+		}
+		else {
+			GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+			UE_LOG(LogTemp, Warning, TEXT("Distance between enemy and player: %f"), (GetActorLocation() - DetectedActor->GetActorLocation()).Size());
+		}
 	}
 }
 
@@ -145,6 +120,7 @@ void AEnemyCharacter::SensePlayer(AActor* ActorSensed, FAIStimulus Stimulus)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Player Lost"))
 		bCanSeeActor = false;
+		DetectedActor = nullptr;
 	}
 }
 
