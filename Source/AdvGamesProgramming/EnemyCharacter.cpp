@@ -39,11 +39,6 @@ void AEnemyCharacter::BeginPlay()
 	bCanSeeActor = false;
 	isItemExist = true;
 	isItemChecked = false;
-<<<<<<< HEAD
-=======
-
-	GetCharacterMovement()->MaxWalkSpeed = 400.0f;
->>>>>>> Nuo
 }
 
 // Called every frame
@@ -66,17 +61,12 @@ void AEnemyCharacter::Tick(float DeltaTime)
 		{
 			CurrentAgentState = AgentState::PATROL;
 		}
-<<<<<<< HEAD
 		else if (bCanSeeActor && (GetActorLocation() - DetectedActor->GetActorLocation()).Size() <= 500) {
-=======
-		else if (bCanSeeActor && (GetActorLocation() - DetectedActor->GetActorLocation()).Size() <= 300) {
->>>>>>> Nuo
 			CurrentAgentState = AgentState::AIM;
 		}
 	}
 	else if (CurrentAgentState == AgentState::CHECK)
 	{
-<<<<<<< HEAD
 		if (isItemExist) {
 			AgentCheck();
 			//back to patrol
@@ -89,31 +79,13 @@ void AEnemyCharacter::Tick(float DeltaTime)
 			CurrentAgentState = AgentState::SEARCH;
 		}
 		
-=======
-		AgentCheck();
-		if (!isItemExist) {
-			CurrentAgentState = AgentState::SEARCH;
-		}
->>>>>>> Nuo
 	}
 	else if (CurrentAgentState == AgentState::AIM)
 	{
 		AgentAim();
-<<<<<<< HEAD
 		if ((GetActorLocation() - DetectedActor->GetActorLocation()).Size() >= 700) {
 			CurrentAgentState = AgentState::CHASE;
 		}
-=======
-		if (!DetectedActor) {
-			CurrentAgentState = AgentState::PATROL;
-		}
-		else {
-			if ((GetActorLocation() - DetectedActor->GetActorLocation()).Size() >= 700) {
-				CurrentAgentState = AgentState::CHASE;
-			}
-		}
-		
->>>>>>> Nuo
 	}
 	else if (CurrentAgentState == AgentState::SEARCH)
 	{
@@ -145,19 +117,12 @@ void AEnemyCharacter::AgentPatrol()
 	UE_LOG(LogTemp, Warning, TEXT("I'm Patrolling"));
 	if (Path.Num() == 0)
 	{
-<<<<<<< HEAD
 		CurrentAgentState = AgentState::CHECK;
 		if (isItemChecked) {
 			if (Manager)
 			{
 				Path = Manager->GeneratePath(CurrentNode, Manager->AllNodes[FMath::RandRange(0, Manager->AllNodes.Num() - 1)]);
 			}
-=======
-		if (Manager)
-		{
-			Path = Manager->GeneratePath(CurrentNode, Manager->AllNodes[FMath::RandRange(0, Manager->AllNodes.Num() - 1)]);
-			isItemChecked = false;
->>>>>>> Nuo
 		}
 	}
 }
@@ -168,43 +133,24 @@ void AEnemyCharacter::AgentChase()
 	if (DetectedActor != nullptr) {
 		AddMovementInput(DetectedActor->GetActorLocation() - GetActorLocation());
 		//slow down when close to the actor
-<<<<<<< HEAD
 		if ((GetActorLocation() - DetectedActor->GetActorLocation()).Size() < 100.0f) {
 			GetCharacterMovement()->MaxWalkSpeed = 100.0f;
 		}
 		else {
 			GetCharacterMovement()->MaxWalkSpeed = 300.0f;
-=======
-		if ((GetActorLocation() - DetectedActor->GetActorLocation()).Size() < 300.0f) {
-			GetCharacterMovement()->MaxWalkSpeed = 100.0f;
-		}
-		else {
-			GetCharacterMovement()->MaxWalkSpeed = 400.0f;
->>>>>>> Nuo
 		}
 	}
 }
 void AEnemyCharacter::AgentCheck()
 {
 	UE_LOG(LogTemp, Warning, TEXT("I'm Checking"));
-<<<<<<< HEAD
 	isItemChecked = true;
-=======
-	CheckItem();
->>>>>>> Nuo
 }
 void AEnemyCharacter::AgentAim()
 {
 	UE_LOG(LogTemp, Warning, TEXT("I'm Aiming"));
-<<<<<<< HEAD
 	FVector FireDirection = DetectedActor->GetActorLocation() - GetActorLocation();
 	Fire(FireDirection);
-=======
-	if (DetectedActor) {
-		FVector FireDirection = DetectedActor->GetActorLocation() - GetActorLocation();
-		Fire(FireDirection);
-	}
->>>>>>> Nuo
 }
 void AEnemyCharacter::AgentSearch()
 {

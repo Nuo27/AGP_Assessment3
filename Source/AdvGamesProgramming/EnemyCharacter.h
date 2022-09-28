@@ -41,11 +41,7 @@ public:
 
 	class UHealthComponent* HealthComponent;
 
-<<<<<<< HEAD
 	UPROPERTY(VisibleAnywhere, Category = "AI")
-=======
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
->>>>>>> Nuo
 	AgentState CurrentAgentState;
 
 	class UAIPerceptionComponent* PerceptionComponent;
@@ -71,11 +67,7 @@ public:
 	void Fire(FVector FireDirection);
 	UPROPERTY(EditAnywhere)
 		bool isItemExist;
-<<<<<<< HEAD
 	UPROPERTY(EditAnywhere)
-=======
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
->>>>>>> Nuo
 	bool isItemChecked;
 	UFUNCTION(BlueprintImplementableEvent)
 		void CheckItem();
