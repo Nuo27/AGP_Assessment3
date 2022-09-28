@@ -33,7 +33,6 @@ void AAIManager::BeginPlay()
 void AAIManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
 }
 
 TArray<ANavigationNode*> AAIManager::GeneratePath(ANavigationNode* StartNode, ANavigationNode* EndNode)

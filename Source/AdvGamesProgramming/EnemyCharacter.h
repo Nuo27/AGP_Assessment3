@@ -71,6 +71,8 @@ public:
 	bool isItemChecked;
 	UFUNCTION(BlueprintImplementableEvent)
 		void CheckItem();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy")
+		bool isEnemyDead;
 private:
 
 	void MoveAlongPath();
