@@ -39,7 +39,7 @@ void AEnemyCharacter::BeginPlay()
 	bCanSeeActor = false;
 	isItemExist = true;
 	isItemChecked = false;
-
+	isEnemyDead = false;
 	GetCharacterMovement()->MaxWalkSpeed = 400.0f;
 }
 
@@ -47,62 +47,71 @@ void AEnemyCharacter::BeginPlay()
 void AEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	if (CurrentAgentState == AgentState::PATROL)
-	{
-		AgentPatrol();
-		MoveAlongPath();
-		if (bCanSeeActor) {
-			CurrentAgentState = AgentState::CHASE;
-		}
+	//get all enemycharacterblueprint
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyCharacter::StaticClass(), FoundActors);
+
+	if (HealthComponent->CurrentHealth <= 0) {
+		isEnemyDead = true;
 	}
-	else if (CurrentAgentState == AgentState::CHASE)
-	{
-		AgentChase();
-		if (!bCanSeeActor)
+	if (!isEnemyDead) {
+		if (CurrentAgentState == AgentState::PATROL)
 		{
-			CurrentAgentState = AgentState::PATROL;
-		}
-		else if (bCanSeeActor && (GetActorLocation() - DetectedActor->GetActorLocation()).Size() <= 300) {
-			CurrentAgentState = AgentState::AIM;
-		}
-	}
-	else if (CurrentAgentState == AgentState::CHECK)
-	{
-		AgentCheck();
-		if (!isItemExist) {
-			CurrentAgentState = AgentState::SEARCH;
-		}
-	}
-	else if (CurrentAgentState == AgentState::AIM)
-	{
-		AgentAim();
-		if (!DetectedActor) {
-			CurrentAgentState = AgentState::PATROL;
-		}
-		else {
-			if ((GetActorLocation() - DetectedActor->GetActorLocation()).Size() >= 700) {
+			AgentPatrol();
+			MoveAlongPath();
+			if (bCanSeeActor) {
 				CurrentAgentState = AgentState::CHASE;
 			}
 		}
-		
-	}
-	else if (CurrentAgentState == AgentState::SEARCH)
-	{
-		AgentSearch();
-		if (bCanSeeActor) {
-			CurrentAgentState = AgentState::CHASE;
+		else if (CurrentAgentState == AgentState::CHASE)
+		{
+			AgentChase();
+			if (!bCanSeeActor)
+			{
+				CurrentAgentState = AgentState::PATROL;
+			}
+			else if (bCanSeeActor && (GetActorLocation() - DetectedActor->GetActorLocation()).Size() <= 300) {
+				CurrentAgentState = AgentState::AIM;
+			}
+		}
+		else if (CurrentAgentState == AgentState::CHECK)
+		{
+			AgentCheck();
+			if (!isItemExist) {
+				CurrentAgentState = AgentState::SEARCH;
+			}
+		}
+		else if (CurrentAgentState == AgentState::AIM)
+		{
+			AgentAim();
+			if (!DetectedActor) {
+				CurrentAgentState = AgentState::PATROL;
+			}
+			else {
+				if ((GetActorLocation() - DetectedActor->GetActorLocation()).Size() >= 700) {
+					CurrentAgentState = AgentState::CHASE;
+				}
+			}
+
+		}
+		else if (CurrentAgentState == AgentState::SEARCH)
+		{
+			AgentSearch();
+			if (bCanSeeActor) {
+				CurrentAgentState = AgentState::CHASE;
+			}
+		}
+
+
+		if (DetectedActor != nullptr) {
+			//Rebuild Blueprint Lookat Function in C++
+			//look at this actor
+			FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), DetectedActor->GetActorLocation());
+			//set the rotator to the actor
+			SetActorRotation(LookAtRotation);
 		}
 	}
-
 	
-	if (DetectedActor != nullptr) {
-		//Rebuild Blueprint Lookat Function in C++
-		//look at this actor
-		FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), DetectedActor->GetActorLocation());
-		//set the rotator to the actor
-		SetActorRotation(LookAtRotation);
-	}
 }
 
 // Called to bind functionality to input
