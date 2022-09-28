@@ -69,18 +69,10 @@ void AEnemyCharacter::Tick(float DeltaTime)
 	}
 	else if (CurrentAgentState == AgentState::CHECK)
 	{
-		if (isItemExist) {
-			AgentCheck();
-			//back to patrol
-			UE_LOG(LogTemp, Warning, TEXT("Item Found"));
-			CurrentAgentState = AgentState::PATROL;
-			
-			UE_LOG(LogTemp, Warning, TEXT("Back to Patrol"));
-		}
-		else if (!isItemExist) {
+		AgentCheck();
+		if (!isItemExist) {
 			CurrentAgentState = AgentState::SEARCH;
 		}
-		
 	}
 	else if (CurrentAgentState == AgentState::AIM)
 	{
@@ -125,12 +117,10 @@ void AEnemyCharacter::AgentPatrol()
 	UE_LOG(LogTemp, Warning, TEXT("I'm Patrolling"));
 	if (Path.Num() == 0)
 	{
-		CurrentAgentState = AgentState::CHECK;
-		if (isItemChecked) {
-			if (Manager)
-			{
-				Path = Manager->GeneratePath(CurrentNode, Manager->AllNodes[FMath::RandRange(0, Manager->AllNodes.Num() - 1)]);
-			}
+		if (Manager)
+		{
+			Path = Manager->GeneratePath(CurrentNode, Manager->AllNodes[FMath::RandRange(0, Manager->AllNodes.Num() - 1)]);
+			isItemChecked = false;
 		}
 	}
 }
@@ -152,7 +142,7 @@ void AEnemyCharacter::AgentChase()
 void AEnemyCharacter::AgentCheck()
 {
 	UE_LOG(LogTemp, Warning, TEXT("I'm Checking"));
-	isItemChecked = true;
+	CheckItem();
 }
 void AEnemyCharacter::AgentAim()
 {
