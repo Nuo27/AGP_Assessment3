@@ -46,7 +46,7 @@ public:
 
 	class UAIPerceptionComponent* PerceptionComponent;
 	AActor* DetectedActor;
-	bool bCanSeeActor;
+	bool bCanSeePlayer;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
