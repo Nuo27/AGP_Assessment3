@@ -36,7 +36,7 @@ void AEnemyCharacter::BeginPlay()
 	}
 
 	DetectedActor = nullptr;
-	bCanSeeActor = false;
+	bCanSeePlayer = false;
 	isItemExist = true;
 	isItemChecked = false;
 	isEnemyDead = false;
@@ -59,19 +59,20 @@ void AEnemyCharacter::Tick(float DeltaTime)
 		{
 			AgentPatrol();
 			MoveAlongPath();
-			if (bCanSeeActor) {
+			if (bCanSeePlayer) {
 				CurrentAgentState = AgentState::CHASE;
 			}
 		}
 		else if (CurrentAgentState == AgentState::CHASE)
 		{
 			AgentChase();
-			if (!bCanSeeActor)
-			{
+			if (!DetectedActor) {
 				CurrentAgentState = AgentState::PATROL;
 			}
-			else if (bCanSeeActor && (GetActorLocation() - DetectedActor->GetActorLocation()).Size() <= 300) {
-				CurrentAgentState = AgentState::AIM;
+			else {
+				if ((GetActorLocation() - DetectedActor->GetActorLocation()).Size() <= 300) {
+					CurrentAgentState = AgentState::AIM;
+				}
 			}
 		}
 		else if (CurrentAgentState == AgentState::CHECK)
@@ -97,7 +98,7 @@ void AEnemyCharacter::Tick(float DeltaTime)
 		else if (CurrentAgentState == AgentState::SEARCH)
 		{
 			AgentSearch();
-			if (bCanSeeActor) {
+			if (bCanSeePlayer) {
 				CurrentAgentState = AgentState::CHASE;
 			}
 		}
@@ -179,14 +180,18 @@ void AEnemyCharacter::SensePlayer(AActor* ActorSensed, FAIStimulus Stimulus)
 	if (Stimulus.WasSuccessfullySensed())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Player Detected"))
-		DetectedActor = ActorSensed;
-		bCanSeeActor = true;
+		
+		//check if actor is player
+		if (ActorSensed->ActorHasTag("Player")) {
+			DetectedActor = ActorSensed;
+			bCanSeePlayer = true;
+		}
 	}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Player Lost"))
-		bCanSeeActor = false;
 		DetectedActor = nullptr;
+		bCanSeePlayer = false;
 	}
 }
 
