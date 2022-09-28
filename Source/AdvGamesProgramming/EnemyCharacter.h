@@ -69,6 +69,8 @@ public:
 		bool isItemExist;
 	UPROPERTY(EditAnywhere)
 	bool isItemChecked;
+	UFUNCTION(BlueprintImplementableEvent)
+		void CheckItem();
 private:
 
 	void MoveAlongPath();

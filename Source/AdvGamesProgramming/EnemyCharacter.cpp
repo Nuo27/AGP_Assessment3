@@ -39,6 +39,8 @@ void AEnemyCharacter::BeginPlay()
 	bCanSeeActor = false;
 	isItemExist = true;
 	isItemChecked = false;
+
+	GetCharacterMovement()->MaxWalkSpeed = 400.0f;
 }
 
 // Called every frame
@@ -61,7 +63,7 @@ void AEnemyCharacter::Tick(float DeltaTime)
 		{
 			CurrentAgentState = AgentState::PATROL;
 		}
-		else if (bCanSeeActor && (GetActorLocation() - DetectedActor->GetActorLocation()).Size() <= 500) {
+		else if (bCanSeeActor && (GetActorLocation() - DetectedActor->GetActorLocation()).Size() <= 300) {
 			CurrentAgentState = AgentState::AIM;
 		}
 	}
@@ -83,9 +85,15 @@ void AEnemyCharacter::Tick(float DeltaTime)
 	else if (CurrentAgentState == AgentState::AIM)
 	{
 		AgentAim();
-		if ((GetActorLocation() - DetectedActor->GetActorLocation()).Size() >= 700) {
-			CurrentAgentState = AgentState::CHASE;
+		if (!DetectedActor) {
+			CurrentAgentState = AgentState::PATROL;
 		}
+		else {
+			if ((GetActorLocation() - DetectedActor->GetActorLocation()).Size() >= 700) {
+				CurrentAgentState = AgentState::CHASE;
+			}
+		}
+		
 	}
 	else if (CurrentAgentState == AgentState::SEARCH)
 	{
@@ -133,11 +141,11 @@ void AEnemyCharacter::AgentChase()
 	if (DetectedActor != nullptr) {
 		AddMovementInput(DetectedActor->GetActorLocation() - GetActorLocation());
 		//slow down when close to the actor
-		if ((GetActorLocation() - DetectedActor->GetActorLocation()).Size() < 100.0f) {
+		if ((GetActorLocation() - DetectedActor->GetActorLocation()).Size() < 300.0f) {
 			GetCharacterMovement()->MaxWalkSpeed = 100.0f;
 		}
 		else {
-			GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+			GetCharacterMovement()->MaxWalkSpeed = 400.0f;
 		}
 	}
 }
@@ -149,8 +157,10 @@ void AEnemyCharacter::AgentCheck()
 void AEnemyCharacter::AgentAim()
 {
 	UE_LOG(LogTemp, Warning, TEXT("I'm Aiming"));
-	FVector FireDirection = DetectedActor->GetActorLocation() - GetActorLocation();
-	Fire(FireDirection);
+	if (DetectedActor) {
+		FVector FireDirection = DetectedActor->GetActorLocation() - GetActorLocation();
+		Fire(FireDirection);
+	}
 }
 void AEnemyCharacter::AgentSearch()
 {
@@ -180,6 +190,7 @@ void AEnemyCharacter::SensePlayer(AActor* ActorSensed, FAIStimulus Stimulus)
 		DetectedActor = nullptr;
 	}
 }
+
 
 void AEnemyCharacter::MoveAlongPath()
 {
