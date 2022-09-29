@@ -45,9 +45,8 @@ public:
 	AgentState CurrentAgentState;
 
 	class UAIPerceptionComponent* PerceptionComponent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy")
 	AActor* DetectedActor;
-	bool bCanSeePlayer;
+	bool bCanSeeActor;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -72,8 +71,6 @@ public:
 	bool isItemChecked;
 	UFUNCTION(BlueprintImplementableEvent)
 		void CheckItem();
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy")
-		bool isEnemyDead;
 private:
 
 	void MoveAlongPath();
