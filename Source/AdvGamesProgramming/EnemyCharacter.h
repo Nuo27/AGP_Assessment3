@@ -45,6 +45,7 @@ public:
 	AgentState CurrentAgentState;
 
 	class UAIPerceptionComponent* PerceptionComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy")
 	AActor* DetectedActor;
 	bool bCanSeePlayer;
 

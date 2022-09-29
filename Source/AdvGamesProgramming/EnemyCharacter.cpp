@@ -104,7 +104,7 @@ void AEnemyCharacter::Tick(float DeltaTime)
 		}
 
 
-		if (DetectedActor != nullptr) {
+		if (DetectedActor) {
 			//Rebuild Blueprint Lookat Function in C++
 			//look at this actor
 			FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), DetectedActor->GetActorLocation());
@@ -190,7 +190,7 @@ void AEnemyCharacter::SensePlayer(AActor* ActorSensed, FAIStimulus Stimulus)
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Player Lost"))
-		DetectedActor = nullptr;
+		//DetectedActor = nullptr;
 		bCanSeePlayer = false;
 	}
 }
