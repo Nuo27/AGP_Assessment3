@@ -41,12 +41,13 @@ public:
 
 	class UHealthComponent* HealthComponent;
 
-	UPROPERTY(VisibleAnywhere, Category = "AI")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
 	AgentState CurrentAgentState;
 
 	class UAIPerceptionComponent* PerceptionComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy")
 	AActor* DetectedActor;
-	bool bCanSeeActor;
+	bool bCanSeePlayer;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -67,10 +68,12 @@ public:
 	void Fire(FVector FireDirection);
 	UPROPERTY(EditAnywhere)
 		bool isItemExist;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	bool isItemChecked;
 	UFUNCTION(BlueprintImplementableEvent)
 		void CheckItem();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy")
+		bool isEnemyDead;
 private:
 
 	void MoveAlongPath();
