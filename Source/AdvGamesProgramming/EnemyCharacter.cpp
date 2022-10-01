@@ -190,7 +190,7 @@ void AEnemyCharacter::SensePlayer(AActor* ActorSensed, FAIStimulus Stimulus)
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Player Lost"))
-		//DetectedActor = nullptr;
+		DetectedActor = nullptr;
 		bCanSeePlayer = false;
 	}
 }
