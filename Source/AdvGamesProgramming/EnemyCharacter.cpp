@@ -204,7 +204,7 @@ void AEnemyCharacter::CheckItem()
 	//for each actor
 	for (AActor* Item : FoundItems) {
 		//check if the actor is in the range
-		if ((GetActorLocation() - Item->GetActorLocation()).Size() <= 150.0f) {
+		if ((GetActorLocation() - Item->GetActorLocation()).Size() <= 300.0f) {
 			isItemExist = true;
 			return;
 		}
