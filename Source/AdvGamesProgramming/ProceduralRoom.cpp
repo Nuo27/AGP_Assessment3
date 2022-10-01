@@ -28,7 +28,7 @@ void AProceduralRoom::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	CreateGrid();
+	
 	PlacePointsOnGrid();
 }
 
