@@ -12,14 +12,14 @@ AProceduralRoom::AProceduralRoom()
 	Floor = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FloorComponent"));
 	SetRootComponent(Floor);
 
-	GridSizeX = 2;
-	GridSizeY = 2;
-	SqareWidth = 500.f;
+	GridSizeX = 5;
+	GridSizeY = 5;
+	SqareWidth = 600.f;
 
 	TopLeft = FVector(0.f);
-	BottomRighe = FVector(1000.f, 1000.f, 0.f);
-	RoomLength = 1000.f;
-	RoomWidth = 1000.f;
+	BottomRighe = FVector(3000.f, 3000.f, 0.f);
+	RoomLength = 3000.f;
+	RoomWidth = 3000.f;
 	Radius = 50.f;
 }
 
@@ -36,7 +36,6 @@ void AProceduralRoom::BeginPlay()
 void AProceduralRoom::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	SpawnItem(GunClass);
 }
 
 void AProceduralRoom::SpawnItem(UClass* ItemToSpawn)
@@ -62,7 +61,7 @@ void AProceduralRoom::CreateGrid()
 
 	}
 
-	for (int32 i = 0; i < GridSizeX + 1; i++)
+	for (int32 i = 0; i < GridSizeY + 1; i++)
 	{
 		FVector Start = TopLeft + FVector(0.f, i * SqareWidth, 1.f);
 		FVector End = Start + FVector(RoomLength, 0.f, 1.f);

@@ -29,6 +29,10 @@ public:
 		TArray<class AProceduralRoom*> AllAgents;
 	UPROPERTY(EditAnywhere, Category = "Agents")
 		TSubclassOf<AProceduralRoom> AgentToSpawn;
+	UPROPERTY(EditAnywhere, Category = "Agents")
+		TSubclassOf<AProceduralRoom> AgentToSpawn2;
+	UPROPERTY(EditAnywhere, Category = "Agents")
+		TSubclassOf<AProceduralRoom> AgentToSpawn3;
 
 	TArray<ANavigationNode*> GeneratePath(ANavigationNode* StartNode, ANavigationNode* EndNode);
 	void PopulateNodes();
