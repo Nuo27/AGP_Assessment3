@@ -70,8 +70,8 @@ public:
 		bool isItemExist;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	bool isItemChecked;
-	UFUNCTION(BlueprintImplementableEvent)
-		void CheckItem();
+
+	void CheckItem();
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy")
 		bool isEnemyDead;
 private:

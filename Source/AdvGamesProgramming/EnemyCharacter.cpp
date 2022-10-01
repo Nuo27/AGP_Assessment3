@@ -196,6 +196,25 @@ void AEnemyCharacter::SensePlayer(AActor* ActorSensed, FAIStimulus Stimulus)
 }
 
 
+void AEnemyCharacter::CheckItem()
+{
+	//get all the actor with tag
+	TArray<AActor*> FoundItems;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "Item", FoundItems);
+	//for each actor
+	for (AActor* Item : FoundItems) {
+		//check if the actor is in the range
+		if ((GetActorLocation() - Item->GetActorLocation()).Size() <= 150.0f) {
+			isItemExist = true;
+			return;
+		}
+		else{
+			isItemExist = false;
+		}
+	}
+	
+}
+
 void AEnemyCharacter::MoveAlongPath()
 {
 	if ((GetActorLocation() - CurrentNode->GetActorLocation()).IsNearlyZero(PathfindingNodeAccuracy)
