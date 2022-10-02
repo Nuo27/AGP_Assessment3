@@ -40,6 +40,7 @@ void AEnemyCharacter::BeginPlay()
 	isItemExist = true;
 	isItemChecked = false;
 	isEnemyDead = false;
+	isEnemySearching = false;
 	GetCharacterMovement()->MaxWalkSpeed = 400.0f;
 }
 
@@ -57,16 +58,24 @@ void AEnemyCharacter::Tick(float DeltaTime)
 	if (!isEnemyDead) {
 		if (CurrentAgentState == AgentState::PATROL)
 		{
-			AgentPatrol();
-			MoveAlongPath();
-			if (bCanSeePlayer) {
-				CurrentAgentState = AgentState::CHASE;
+			if (!isEnemySearching) {
+				AgentPatrol();
+				MoveAlongPath();
+				if (bCanSeePlayer) {
+					CurrentAgentState = AgentState::CHASE;
+				}
 			}
+			else {
+				CurrentAgentState = AgentState::SEARCH;
+			}
+			
 		}
 		else if (CurrentAgentState == AgentState::CHASE)
 		{
+			isEnemySearching = false;
 			AgentChase();
 			if (!DetectedActor) {
+				isEnemySearching = false;
 				CurrentAgentState = AgentState::PATROL;
 			}
 			else {
@@ -77,10 +86,16 @@ void AEnemyCharacter::Tick(float DeltaTime)
 		}
 		else if (CurrentAgentState == AgentState::CHECK)
 		{
-			AgentCheck();
-			if (!isItemExist) {
+			if (!isEnemySearching) {
+				AgentCheck();
+				if (!isItemExist) {
+					CurrentAgentState = AgentState::SEARCH;
+				}
+			}
+			else {
 				CurrentAgentState = AgentState::SEARCH;
 			}
+			
 		}
 		else if (CurrentAgentState == AgentState::AIM)
 		{

@@ -74,6 +74,8 @@ public:
 	void CheckItem();
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy")
 		bool isEnemyDead;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy")
+		bool isEnemySearching;
 private:
 
 	void MoveAlongPath();

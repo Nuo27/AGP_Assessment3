@@ -2,6 +2,7 @@
 
 
 #include "HealthComponent.h"
+#include "EnemyCharacter.h"
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
@@ -35,6 +36,12 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 void UHealthComponent::OnTakeDamage(float Damage)
 {
 	CurrentHealth -= Damage;
+	//cast to parent enemy character
+	AEnemyCharacter* ParentActor = Cast<AEnemyCharacter>(GetOwner());
+	//change current agent state
+	if(ParentActor){
+	ParentActor->isEnemySearching = true;
+	}
 	if (CurrentHealth < 0.0f)
 	{
 		CurrentHealth = 0;
