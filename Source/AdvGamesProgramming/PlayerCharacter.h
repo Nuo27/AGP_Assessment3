@@ -20,13 +20,16 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	float SprintMovementSpeed;
+	float NormalMovementSpeed;
+
 public:	
 
 	UPROPERTY(EditAnywhere)
 	float LookSensitivity;
 	UPROPERTY(EditInstanceOnly)
 	float SprintMultiplier;
-
+	class UHealthComponent* HealthComponent;
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -40,6 +43,11 @@ public:
 	void SprintStart();
 	void SprintEnd();
 	void Reload();
+
+	UFUNCTION(Server, Reliable)
+		void ServerSprintStart();
+	UFUNCTION(Server, Reliable)
+		void ServerSprintEnd();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BlueprintReload();

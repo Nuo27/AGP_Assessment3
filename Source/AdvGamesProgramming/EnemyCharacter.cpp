@@ -232,14 +232,16 @@ void AEnemyCharacter::CheckItem()
 
 void AEnemyCharacter::MoveAlongPath()
 {
-	if ((GetActorLocation() - CurrentNode->GetActorLocation()).IsNearlyZero(PathfindingNodeAccuracy)
-		&& Path.Num() > 0)
-	{
-		CurrentNode = Path.Pop();
-	}
-	else if (!(GetActorLocation() - CurrentNode->GetActorLocation()).IsNearlyZero(PathfindingNodeAccuracy))
-	{
-		AddMovementInput(CurrentNode->GetActorLocation() - GetActorLocation());
+	if (CurrentNode) {
+		if ((GetActorLocation() - CurrentNode->GetActorLocation()).IsNearlyZero(PathfindingNodeAccuracy)
+			&& Path.Num() > 0)
+		{
+			CurrentNode = Path.Pop();
+		}
+		else if (!(GetActorLocation() - CurrentNode->GetActorLocation()).IsNearlyZero(PathfindingNodeAccuracy))
+		{
+			AddMovementInput(CurrentNode->GetActorLocation() - GetActorLocation());
+		}
 	}
 }
 
