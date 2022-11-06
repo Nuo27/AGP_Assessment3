@@ -13,5 +13,5 @@ UCLASS()
 class ADVGAMESPROGRAMMING_API AMultiplayerGameMode : public AGameMode
 {
 	GENERATED_BODY()
-	
+
 };
